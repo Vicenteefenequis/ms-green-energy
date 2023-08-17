@@ -17,7 +17,9 @@ class IndicatorSerializer(serializers.ModelSerializer):
     average_duration_of_power_outages = serializers.SerializerMethodField()
 
     # USER_REGISTRANTION_DATA
-    name = serializers.CharField(max_length=50, write_only=True)
+    name = serializers.CharField(max_length=50)
+    city = serializers.CharField(max_length=50)
+
     total_residential_electricity_use = serializers.FloatField(
         write_only=True
     )
@@ -55,7 +57,6 @@ class IndicatorSerializer(serializers.ModelSerializer):
     population = serializers.FloatField(
         write_only=True
     )
-    city = serializers.CharField(max_length=50, write_only=True)
 
     created_at = serializers.SerializerMethodField()
     updated_at = serializers.SerializerMethodField()
@@ -100,6 +101,7 @@ class IndicatorSerializer(serializers.ModelSerializer):
         fields = [
             "id",
             "name",
+            "city",
             "total_residential_electricity_use_per_capita",
             "percentage_electricity_supply",
             "annual_energy_consumption_of_public_buildings",
@@ -120,7 +122,6 @@ class IndicatorSerializer(serializers.ModelSerializer):
             "sum_of_the_duration_of_all_interruptions",
             "total_number_of_interruptions",
             "population",
-            "city",
             "updated_at",
             "created_at",
         ]
