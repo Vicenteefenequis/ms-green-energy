@@ -3,7 +3,7 @@ from django.shortcuts import get_object_or_404
 from rest_framework import generics, permissions, status
 from core_apps.indicators.models import Indicator
 from core_apps.indicators.pagination import IndicatorPagination
-from core_apps.indicators.renderers import IndicatorJSONRenderer, IndicatorsJSONRenderer
+from core_apps.indicators.renderers import IndicatorJSONRenderer
 from core_apps.indicators.serializers import IndicatorSerializer
 from rest_framework.response import Response
 import logging
@@ -56,7 +56,7 @@ class IndicatorListCreateView(generics.ListCreateAPIView):
         "created_at",
         "updated_at",
     ]
-    renderer_classes = [IndicatorsJSONRenderer]
+    renderer_classes = [IndicatorJSONRenderer]
     pagination_class = IndicatorPagination
 
     def perform_create(self, serializer):

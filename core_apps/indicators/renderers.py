@@ -20,18 +20,4 @@ class IndicatorJSONRenderer(JSONRenderer):
         if errors is not None:
             return super(IndicatorJSONRenderer, self).render(data)
 
-        return json.dumps({"status_code": status_code, "indicator": data})
-
-
-class IndicatorsJSONRenderer(JSONRenderer):
-    charset = "utf-8"
-
-    def render(self, data, accepted_media_type=None, renderer_context=None):
-        status_code = renderer_context["response"].status_code
-
-        errors = data.get("errors", None)
-
-        if errors is not None:
-            return super(IndicatorsJSONRenderer, self).render(data)
-
-        return json.dumps({"status_code": status_code, "indicators": data})
+        return json.dumps({"status_code": status_code, "content": data})
