@@ -7,7 +7,8 @@ User = get_user_model()
 
 
 class Indicator(TimeStampedModel):
-    user = models.OneToOneField(
+    name = models.CharField(max_length=50, blank=False, null=False)
+    user = models.ForeignKey(
         User, on_delete=models.CASCADE, related_name="indicators"
     )
     total_residential_electricity_use = models.FloatField()
