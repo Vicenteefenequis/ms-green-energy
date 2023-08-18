@@ -11,6 +11,7 @@ class Indicator(TimeStampedModel):
     user = models.ForeignKey(
         User, on_delete=models.CASCADE, related_name="indicators"
     )
+    description = models.TextField()
     total_residential_electricity_use = models.FloatField()
     number_of_people_with_regular_connection = models.FloatField()
     total_electricity_consumption_in_public_buildings = models.FloatField()

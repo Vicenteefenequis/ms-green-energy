@@ -15,7 +15,6 @@ logger = logging.getLogger(__name__)
 class IndicatorRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Indicator.objects.all()
     serializer_class = IndicatorSerializer
-    renderer_classes = [IndicatorJSONRenderer]
     permission_classes = [permissions.IsAuthenticated]
     lookup_field = "id"
 

@@ -102,6 +102,7 @@ class IndicatorSerializer(serializers.ModelSerializer):
             "id",
             "name",
             "city",
+            "description",
             "total_residential_electricity_use_per_capita",
             "percentage_electricity_supply",
             "annual_energy_consumption_of_public_buildings",
