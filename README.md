@@ -29,19 +29,25 @@ python3 -m venv env
 source env/bin/activate
 ```
 
-3.  Subir o banco de dados PostgreSQL com Docker:
+3. Instalar as dependências do projeto
+
+```shell
+pip install -r requirements/local.txt
+```
+
+4. Subir o banco de dados PostgreSQL com Docker:
 
 ```shell
 make build
 ```
 
-4. Executar as migrações do PostgreSQL:
+5. Executar as migrações do PostgreSQL:
 
 ```shell
 make makemigrations
 ```
 
-5. Assinalar as migrações do PostgreSQL:
+6. Assinalar as migrações do PostgreSQL:
 
 ```shell
 make migrate
