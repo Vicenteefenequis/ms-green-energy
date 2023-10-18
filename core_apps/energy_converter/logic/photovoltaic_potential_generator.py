@@ -196,7 +196,7 @@ class GeradorPotenciaFotovoltaico:
         k2 = (20.0 / 9.0) * (1 / efInv100) - (5.0 / 2.0) * (1.0 / efInv50) + (5.0 / 18.0) * (1.0 / efInv10)
 
         # Resolva a equação do segundo grau para obter pSaida
-        pSaida = gerarPotenciaSaida(k0, k1, k2, pfv)
+        pSaida = gerarPotenciaSaida(k0, k1, k2, pfvNormalizado)
 
         # Suponha que você tenha uma função para resolver a equação do segundo grau em pfvNormalizado
 
