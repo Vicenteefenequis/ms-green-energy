@@ -7,6 +7,7 @@ class DataEnergeticSerializer(serializers.ModelSerializer):
     class Meta:
         model = DataEnergetic
         fields = [
+            "id",
             "total_residential_electricity_use",
             "number_of_people_with_regular_connection",
             "total_electricity_consumption_in_public_buildings",
@@ -22,41 +23,50 @@ class DataEnergeticSerializer(serializers.ModelSerializer):
 
 
 class LocationSerializer(serializers.ModelSerializer):
+    data_energetic = DataEnergeticSerializer()
+
     class Meta:
         model = Location
-        fields = '__all__'
+        fields = [
+            "id",
+            "name",
+            "population",
+            "is_certified",
+            "slug",
+            "type",
+            "data_energetic",
+        ]
 
 
 class ProjectCreateSerializer(serializers.ModelSerializer):
-    data_energetic = DataEnergeticSerializer()
     location = LocationSerializer()
 
     class Meta:
         model = Project
         fields = [
             "id",
-            "created_at",
-            "updated_at",
             "name",
             "description",
-            "data_energetic",
             "location",
         ]
         read_only_fields = ('user', )
 
     def create(self, validated_data):
-        data_energetic_data = validated_data.pop('data_energetic')
         location_data = validated_data.pop('location')
+        data_energetic_data = location_data.pop('data_energetic')
 
-        # Create DataEnergetic and Location instances
+        # Primeiro crie o DataEnergetic
         data_energetic_instance = DataEnergetic.objects.create(
             **data_energetic_data)
+
+        # Agora, associe o DataEnergetic ao Location
+        location_data['data_energetic'] = data_energetic_instance
         location_instance = Location.objects.create(**location_data)
 
-        # Get the user from the request and add it to the project data
+        # O resto do seu código
         user = self.context['request'].user
         project = Project.objects.create(
-            user=user, data_energetic=data_energetic_instance, location=location_instance, **validated_data)
+            user=user, location=location_instance, **validated_data)
 
         return project
 
@@ -74,4 +84,14 @@ class ProjectListSerializer(serializers.ModelSerializer):
             "name",
             "description",
             "location_name",
+        ]
+
+
+class LocationListSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Location
+        fields = [
+            "id",
+            "name",
+            "slug"
         ]

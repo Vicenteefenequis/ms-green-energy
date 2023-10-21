@@ -1,13 +1,13 @@
 from django.shortcuts import get_object_or_404
 from core_apps.projects.models import Location, Project
 from core_apps.projects.pagination import ProjectPagination
-from core_apps.projects.serializers import LocationSerializer, ProjectCreateSerializer, ProjectListSerializer
+from core_apps.projects.serializers import LocationSerializer, ProjectCreateSerializer, ProjectListSerializer, LocationListSerializer
 from rest_framework.permissions import IsAuthenticated
 from rest_framework import generics, status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from core_apps.projects.service import IndicatorCalculator
+from core_apps.projects.service import IndicatorCalculator, Indicator
 
 
 class ProjectIndicatorCreateView(generics.ListCreateAPIView):
@@ -37,52 +37,10 @@ class ProjectIndicatorView(APIView):
 
     def get(self, request, id):
         projects = self.get_projects(id, request.user)
-        calculator = IndicatorCalculator(projects)
-
-        indicators = [
-            {
-                "name": "Uso de energia elétrica residencial per capita",
-                "unit": "kWh/ano",
-                "data": calculator.residential_electricity_per_capita(),
-                "average": calculator.calculate_average(calculator.residential_electricity_per_capita())
-            },
-            {
-                "name": "Porcentagem de habitantes da cidade com fornecimento regular de energia elétrica",
-                "unit": "%",
-                "data": calculator.percentage_habitants_with_regular_connection(),
-                "average": calculator.calculate_average(calculator.percentage_habitants_with_regular_connection())
-            },
-            {
-                "name": "Consumo de energia de edificios publicos por ano(kWh/m2)",
-                "unit": "kWh/m2",
-                "data": calculator.electricity_consumption_in_public_buildings(),
-                "average": calculator.calculate_average(calculator.electricity_consumption_in_public_buildings())
-            },
-            {
-                "name": "Porcentagem de energia total proveniente de fontes renováveis, como parte do consumo total da energia da cidade",
-                "unit": "%",
-                "data": calculator.percentage_of_renewable_energy(),
-                "average": calculator.calculate_average(calculator.percentage_of_renewable_energy())
-            },
-            {
-                "name": "Uso total de energia elétrica per capita(kWh/ano)",
-                "unit": "kWh/ano",
-                "data": calculator.total_electricity_per_capita(),
-                "average": calculator.calculate_average(calculator.total_electricity_per_capita())
-            },
-            {
-                "name": "Número médio de interrupções de energia elétrica por consumidor por ano",
-                "unit": "número",
-                "data": calculator.average_interruptions_energy_consumer(),
-                "average": calculator.calculate_average(calculator.average_interruptions_energy_consumer())
-            },
-            {
-                "name": "Duração média das interrupções de energia elétrica (em horas)",
-                "unit": "número",
-                "data": calculator.duration_average_interruptions_energy(),
-                "average": calculator.calculate_average(calculator.duration_average_interruptions_energy())
-            },
-        ]
+        locations = [project.location for project in projects if hasattr(
+            project, 'location')]
+        calculator = IndicatorCalculator(locations)
+        indicators = Indicator.to_response(calculator)
 
         return Response(indicators, status=status.HTTP_200_OK)
 
@@ -92,10 +50,35 @@ class ProjectListView(generics.ListAPIView):
     serializer_class = ProjectListSerializer
 
 
+# class LocationListView(generics.ListAPIView):
+#     queryset = Location.objects.all()
+#     serializer_class = LocationSerializer
+#     pagination_class = ProjectPagination
+
+#     def get_queryset(self):
+#         return super().get_queryset().filter(type="E")
+
+
 class LocationListView(generics.ListAPIView):
     queryset = Location.objects.all()
-    serializer_class = LocationSerializer
+    serializer_class = LocationListSerializer
     pagination_class = ProjectPagination
 
     def get_queryset(self):
         return super().get_queryset().filter(type="E")
+
+
+class LocationBatchView(APIView):
+    def post(self, request):
+        siglas = request.data.get('siglas', [])
+
+        if not siglas:
+            return Response({"error": "Siglas não fornecidas."}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Filtrar as Locations pelas siglas
+        locations = Location.objects.filter(slug__in=siglas)
+
+        calculator = IndicatorCalculator(locations)
+        indicators = Indicator.to_response(calculator)
+
+        return Response(indicators, status=status.HTTP_200_OK)

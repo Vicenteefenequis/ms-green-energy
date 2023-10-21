@@ -4,7 +4,8 @@ from .views import (
     LocationListView,
     ProjectIndicatorCreateView,
     ProjectIndicatorView,
-    ProjectListView
+    ProjectListView,
+    LocationBatchView
 )
 
 
@@ -12,5 +13,6 @@ urlpatterns = [
     path("", ProjectIndicatorCreateView.as_view(), name="project-create"),
     path("<uuid:id>/city-indicator/",
          ProjectIndicatorView.as_view(), name="project-view"),
-    path("location/", LocationListView.as_view(), name="location-list"),
+    path("states/", LocationListView.as_view(), name="location-list"),
+    path("states/batch", LocationBatchView.as_view(), name="location-batch"),
 ]

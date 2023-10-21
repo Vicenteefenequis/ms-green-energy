@@ -25,6 +25,10 @@ class Location(TimeStampedModel):
     population = models.IntegerField()
     is_certified = models.BooleanField(default=False)
     type = models.CharField(max_length=1, blank=False, null=False)
+    slug = models.CharField(max_length=255, blank=False, null=False)
+    data_energetic = models.OneToOneField(
+        DataEnergetic, on_delete=models.CASCADE, related_name="locations"
+    )
 
     class Meta:
         verbose_name = _("location")
@@ -38,9 +42,7 @@ class Project(TimeStampedModel):
     user = models.ForeignKey(
         User, on_delete=models.CASCADE, related_name="projects"
     )
-    data_energetic = models.OneToOneField(
-        DataEnergetic, on_delete=models.CASCADE, related_name="projects"
-    )
+
     location = models.OneToOneField(
         Location, on_delete=models.CASCADE, related_name="projects"
     )
