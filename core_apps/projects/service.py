@@ -45,7 +45,7 @@ class IndicatorCalculator:
 
     def duration_average_interruptions_energy(self):
         return [{
-            "location_name4": location.name,
+            "location_name": location.name,
             "value": location.data_energetic.sum_of_the_duration_of_all_interruptions / location.data_energetic.total_number_of_interruptions
         } for location in self.locations]
 
