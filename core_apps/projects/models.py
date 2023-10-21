@@ -21,11 +21,12 @@ class DataEnergetic(TimeStampedModel):
 
 
 class Location(TimeStampedModel):
-    name = models.CharField(max_length=50, blank=False, null=False)
+    name = models.CharField(max_length=50, blank=False,
+                            null=False, unique=True)
     population = models.IntegerField()
     is_certified = models.BooleanField(default=False)
     type = models.CharField(max_length=1, blank=False, null=False)
-    slug = models.CharField(max_length=255, blank=False, null=False)
+    slug = models.CharField(max_length=255, blank=True, default="S/N")
     data_energetic = models.OneToOneField(
         DataEnergetic, on_delete=models.CASCADE, related_name="locations"
     )
