@@ -12,10 +12,28 @@ def main():
         resultado_dia = geracao_energia(parametros_entrada, dia)
         resultados_ano.append(resultado_dia)
 
-    # Calcular a média anual excluindo valores 0
-    total_sum = sum([sum(filter(lambda x: x != 0, dia)) for dia in resultados_ano])
-    average = total_sum / 12
-    print("Média anual:", average)
+    print("Média anual:", calcular_media_anual_fotovoltaico(resultados_ano))
+
+
+def calcular_media_anual_fotovoltaico(matrizGeracaoFotovoltaico):
+    somaTotalFotovoltaico = 0
+    totalDias = len(matrizGeracaoFotovoltaico)
+    totalHoras = len(matrizGeracaoFotovoltaico[0])
+
+    for dia in range(totalDias):
+        for h in range(totalHoras):
+            if matrizGeracaoFotovoltaico[dia][h] != 0:
+                somaTotalFotovoltaico += matrizGeracaoFotovoltaico[dia][h]
+
+    mediaAnualFotovoltaico = somaTotalFotovoltaico / 12
+
+    return mediaAnualFotovoltaico
+
+
+# Exemplo de uso:
+# matrizGeracaoFotovoltaico = ...  # Alguma matriz 2D
+# mediaFotovoltaico = calcular_media_anual_fotovoltaico(matrizGeracaoFotovoltaico)
+# print("Média Anual Fotovoltaico:", mediaFotovoltaico
 
 
 def geracao_energia(parametros_entrada, dia):
@@ -30,7 +48,6 @@ def geracao_energia(parametros_entrada, dia):
     div(gerador, 1000)
     ceil_2d_array(gerador, 4)
     return gerador[dia]
-
 
 
 def carregar_parametros_entrada():
