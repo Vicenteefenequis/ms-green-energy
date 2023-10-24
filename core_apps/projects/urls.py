@@ -1,11 +1,9 @@
 from django.urls import path
 
 from .views import (
-    LocationListView,
     ProjectIndicatorCreateView,
     ProjectIndicatorView,
-    ProjectListView,
-    LocationBatchView
+    LocationBatchView, LocationListView
 )
 
 

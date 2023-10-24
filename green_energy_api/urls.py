@@ -4,9 +4,11 @@ from django.urls import path, include
 from drf_yasg import openapi
 from drf_yasg.views import get_schema_view
 from rest_framework import permissions
-from dj_rest_auth.views import PasswordResetConfirmView
-from core_apps.users.views import CustomUserDetailsView
 
+from core_apps.energy_converter.view.view import NearestLocationStationView
+from core_apps.projects.views import LocationCreateView, LocationListView, LocationsListStation, \
+    ProjectIndicatorCreateView
+from core_apps.users.views import CustomUserDetailsView
 
 schema_view = get_schema_view(
     openapi.Info(
@@ -27,6 +29,10 @@ urlpatterns = [
     path("api/v1/auth/", include("dj_rest_auth.urls")),
     path("api/v1/auth/registration/", include("dj_rest_auth.registration.urls")),
     path("api/v1/projects/", include("core_apps.projects.urls")),
+    path("api/v1/projects/teste/", ProjectIndicatorCreateView.as_view(), name="project-create"),
+    path('api/v1/sendStationLocations/', LocationCreateView.as_view(), name='location-create'),
+    path('api/v1/locationsStations/', LocationsListStation.as_view(), name='location-list'),
+    path('api/v1/nearest_station/', NearestLocationStationView.as_view(), name='nearest-station'),
 ]
 
 

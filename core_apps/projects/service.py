@@ -1,3 +1,7 @@
+def calculate_indicators(locations):
+    calculator = IndicatorCalculator(locations)
+    return Indicator.to_response(calculator)
+
 
 class IndicatorCalculator:
 

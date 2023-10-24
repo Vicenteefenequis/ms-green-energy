@@ -1,12 +1,15 @@
 from django.shortcuts import get_object_or_404
-from core_apps.projects.models import Location, Project
-from core_apps.projects.pagination import ProjectPagination
-from core_apps.projects.serializers import LocationSerializer, ProjectCreateSerializer, ProjectListSerializer, LocationListSerializer
-from rest_framework.permissions import IsAuthenticated
 from rest_framework import generics, status
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from core_apps.energy_converter.model.Location import LocationSerializer
+from core_apps.energy_converter.model.LocationStation import LocationStation
+from core_apps.projects.models import Location, Project
+from core_apps.projects.pagination import ProjectPagination
+from core_apps.projects.serializers import ProjectCreateSerializer, ProjectListSerializer, \
+    LocationListSerializer
 from core_apps.projects.service import IndicatorCalculator, Indicator
 
 
@@ -66,6 +69,23 @@ class LocationListView(generics.ListAPIView):
 
     def get_queryset(self):
         return super().get_queryset().filter(type="E")
+
+
+class LocationCreateView(generics.ListCreateAPIView):
+    queryset = LocationStation.objects.all()
+    serializer_class = LocationSerializer
+
+    def post(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        if serializer.is_valid():
+            location = serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class LocationsListStation(generics.ListAPIView):
+    queryset = LocationStation.objects.all()
+    serializer_class = LocationSerializer
 
 
 class LocationBatchView(APIView):
