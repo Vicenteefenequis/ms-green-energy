@@ -9,14 +9,15 @@ from core_apps.projects.service import IndicatorCalculator, calculate_indicators
 
 
 def update_project_indicators(project_pkid):
-    # Update the project indicators to the value "2" based on project_pkid
+    value = 1
+    # Atualizar os indicadores do projeto para o valor "2" com base no project_pkid
     with connection.cursor() as cursor:
         cursor.execute("""
             UPDATE projects_dataenergetic de
             SET 
-                total_residential_electricity_use = total_residential_electricity_use + 25400.0,
-                total_electricity_consumption_in_public_buildings = total_electricity_consumption_in_public_buildings + 25400.0,
-                total_electricity_use = total_electricity_use + 25400.0
+                total_residential_electricity_use = total_residential_electricity_use + %s,
+                total_electricity_consumption_in_public_buildings = total_electricity_consumption_in_public_buildings + %s,
+                total_electricity_use = total_electricity_use + %s
             FROM 
                 projects_project p 
             INNER JOIN   
@@ -25,7 +26,7 @@ def update_project_indicators(project_pkid):
                 p.location_id = l.pkid
             WHERE 
                 l.data_energetic_id = de.pkid AND p.pkid = %s;
-        """, [project_pkid])
+        """, [value, value, value, project_pkid])
 
 
 def get_project_indicators(project_pkid):

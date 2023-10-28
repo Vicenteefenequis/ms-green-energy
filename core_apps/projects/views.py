@@ -1,3 +1,5 @@
+import math
+
 from django.shortcuts import get_object_or_404
 from rest_framework import generics, status
 from rest_framework.permissions import IsAuthenticated
@@ -29,20 +31,53 @@ class ProjectIndicatorCreateView(generics.ListCreateAPIView):
             return ProjectListSerializer
 
 
+def haversine(lon1, lat1, lon2, lat2):
+    R = 6371
+    dlat = math.radians(lat2 - lat1)
+    dlon = math.radians(lon2 - lon1)
+    a = (math.sin(dlat / 2) * math.sin(dlat / 2) +
+         math.cos(math.radians(lat1)) * math.cos(math.radians(lat2)) *
+         math.sin(dlon / 2) * math.sin(dlon / 2))
+    c = 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a))
+    distance = R * c  # Distance in km
+    return distance
+
+
+def get_nearest_station(user_latitude, user_longitude):
+    nearest_station = None
+    nearest_distance = float('inf')  # initialize with infinity
+
+    for station in LocationStation.objects.all():
+        distance = haversine(user_longitude, user_latitude, float(station.longitude), float(station.latitude))
+        if distance < nearest_distance:
+            nearest_distance = distance
+            nearest_station = station
+
+    return nearest_station
+
+
 class ProjectIndicatorView(APIView):
 
     def get_projects(self, id, user):
-        project_user = get_object_or_404(
-            Project, id=id, user=user)
+        project_user = get_object_or_404(Project, id=id, user=user)
         projects = list(Project.objects.filter(location__is_certified=True))
         projects.insert(0, project_user)
         return projects
 
     def get(self, request, id):
+        # Recuperando os valores dos parâmetros da query
+        latitude = float(request.query_params.get('latitude', 0))
+        longitude = float(request.query_params.get('longitude', 0))
         projects = self.get_projects(id, request.user)
-        locations = [project.location for project in projects if hasattr(
-            project, 'location')]
-        calculator = IndicatorCalculator(locations)
+        locations = [project.location for project in projects if hasattr(project, 'location')]
+
+        if latitude and longitude:
+            nearest_station = get_nearest_station(latitude, longitude)
+            average_photovoltaic_irradiation = nearest_station.average_photovoltaic_irradiation
+        else:
+            average_photovoltaic_irradiation = 0  # ou outro valor padrão que deseja usar
+
+        calculator = IndicatorCalculator(locations, average_photovoltaic_irradiation)
         indicators = Indicator.to_response(calculator)
 
         return Response(indicators, status=status.HTTP_200_OK)
