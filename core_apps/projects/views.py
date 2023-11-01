@@ -7,7 +7,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from core_apps.energy_converter.model.Location import LocationSerializer
-from core_apps.energy_converter.model.LocationStation import LocationStation
+from core_apps.energy_converter.model.LocationStation import LocationStation, getAnyLocation
 from core_apps.projects.models import Location, Project
 from core_apps.projects.pagination import ProjectPagination
 from core_apps.projects.serializers import ProjectCreateSerializer, ProjectListSerializer, \
@@ -43,13 +43,13 @@ def haversine(lon1, lat1, lon2, lat2):
     return distance
 
 
-def get_nearest_station(user_latitude, user_longitude):
+def get_nearest_station(user_latitude, user_longitude, locations):
     nearest_station = None
     nearest_distance = float('inf')  # initialize with infinity
-
-    for station in LocationStation.objects.all():
+    non_certified_location_name = next((location.name for location in locations if not location.is_certified), None)
+    for station in getAnyLocation():
         distance = haversine(user_longitude, user_latitude, float(station.longitude), float(station.latitude))
-        if distance < nearest_distance:
+        if distance < nearest_distance and station.city == non_certified_location_name:
             nearest_distance = distance
             nearest_station = station
 
@@ -72,7 +72,7 @@ class ProjectIndicatorView(APIView):
         locations = [project.location for project in projects if hasattr(project, 'location')]
 
         if latitude and longitude:
-            nearest_station = get_nearest_station(latitude, longitude)
+            nearest_station = get_nearest_station(latitude, longitude, locations)
             average_photovoltaic_irradiation = nearest_station.average_photovoltaic_irradiation
         else:
             average_photovoltaic_irradiation = 0  # ou outro valor padrão que deseja usar
