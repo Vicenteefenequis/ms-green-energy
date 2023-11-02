@@ -5,9 +5,8 @@ from drf_yasg import openapi
 from drf_yasg.views import get_schema_view
 from rest_framework import permissions
 
-from core_apps.energy_converter.view.view import NearestLocationStationView
-from core_apps.projects.views import LocationCreateView, LocationListView, LocationsListStation, \
-    ProjectIndicatorCreateView
+from core_apps.energy_converter.view.view import NearestLocationStationView, reverse_geocode_view
+from core_apps.projects.views import LocationCreateView, LocationsListStation
 from core_apps.users.views import CustomUserDetailsView
 
 schema_view = get_schema_view(
@@ -32,6 +31,8 @@ urlpatterns = [
     path('api/v1/sendStationLocations/', LocationCreateView.as_view(), name='location-create'),
     path('api/v1/locationsStations/', LocationsListStation.as_view(), name='location-list'),
     path('api/v1/nearest_station/', NearestLocationStationView.as_view(), name='nearest-station'),
+    path('api/v1/reverse-geocode/', reverse_geocode_view, name='reverse-geocode'),
+
 ]
 
 

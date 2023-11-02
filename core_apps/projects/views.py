@@ -43,13 +43,12 @@ def haversine(lon1, lat1, lon2, lat2):
     return distance
 
 
-def get_nearest_station(user_latitude, user_longitude, locations):
+def get_nearest_station(user_latitude, user_longitude):
     nearest_station = None
     nearest_distance = float('inf')  # initialize with infinity
-    non_certified_location_name = next((location.name for location in locations if not location.is_certified), None)
     for station in getAnyLocation():
         distance = haversine(user_longitude, user_latitude, float(station.longitude), float(station.latitude))
-        if distance < nearest_distance and station.city == non_certified_location_name:
+        if distance < nearest_distance:
             nearest_distance = distance
             nearest_station = station
 
@@ -72,7 +71,7 @@ class ProjectIndicatorView(APIView):
         locations = [project.location for project in projects if hasattr(project, 'location')]
 
         if latitude and longitude:
-            nearest_station = get_nearest_station(latitude, longitude, locations)
+            nearest_station = get_nearest_station(latitude, longitude)
             average_photovoltaic_irradiation = nearest_station.average_photovoltaic_irradiation
         else:
             average_photovoltaic_irradiation = 0  # ou outro valor padrão que deseja usar

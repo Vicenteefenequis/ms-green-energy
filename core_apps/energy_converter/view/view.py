@@ -1,11 +1,17 @@
 # View
 import math
-from rest_framework import views, status, response
+
+import requests
 from django.db import connection
+from django.http import JsonResponse
+from rest_framework import serializers
+from rest_framework import views, status, response
+
 from core_apps.energy_converter.model.Location import LocationSerializer
-from core_apps.energy_converter.model.LocationStation import LocationStation
+from core_apps.energy_converter.model.LocationStation import getAnyLocation
+from core_apps.energy_converter.model.geocode import GeocodeDataSerializer
 from core_apps.projects.models import Project
-from core_apps.projects.service import IndicatorCalculator, calculate_indicators, Indicator
+from core_apps.projects.service import IndicatorCalculator, Indicator
 
 
 def update_project_indicators(project_pkid):
@@ -73,17 +79,17 @@ def haversine(lon1, lat1, lon2, lat2):
     return distance
 
 
-def get_nearest_station(user_latitude, user_longitude):
+def get_nearest_station(user_latitude, user_longitude, project_city_name):
     nearest_station = None
     nearest_distance = float('inf')  # initialize with infinity
 
-    for station in LocationStation.objects.all():
+    for station in getAnyLocation():
         distance = haversine(user_longitude, user_latitude, float(station.longitude), float(station.latitude))
-        if distance < nearest_distance:
+        if distance < nearest_distance and station.city == project_city_name:
             nearest_distance = distance
             nearest_station = station
 
-    return nearest_station
+    return nearest_station is None, nearest_station
 
 
 class NearestLocationStationView(views.APIView):
@@ -97,7 +103,7 @@ class NearestLocationStationView(views.APIView):
             return response.Response({"detail": "Latitude and Longitude are required."},
                                      status=status.HTTP_400_BAD_REQUEST)
 
-        nearest_station = get_nearest_station(float(user_latitude), float(user_longitude))
+        nearest_station = get_nearest_station(float(user_latitude), float(user_longitude), "Goiânia")
         if not nearest_station:
             return response.Response({"detail": "No station found."}, status=status.HTTP_404_NOT_FOUND)
         update_project_indicators(project_pkid)
@@ -115,3 +121,36 @@ class NearestLocationStationView(views.APIView):
         serialized_data["indicators"] = indicators
 
         return response.Response(serialized_data, status=status.HTTP_200_OK)
+
+
+def reverse_geocode_view(request):
+    latitude = request.GET.get('lat')
+    longitude = request.GET.get('lon')
+    project_city_name = request.GET.get('project_city_name')
+
+    if not latitude or not longitude:
+        return JsonResponse({'error': 'Missing latitude or longitude parameters'}, status=400)
+
+    try:
+        response = requests.get(
+            "https://geocode.maps.co/reverse",
+            params={'lat': latitude, 'lon': longitude}
+        )
+        response.raise_for_status()
+    except requests.RequestException as e:
+        return JsonResponse({'error': str(e)}, status=502)
+
+    geocode_data = response.json()
+    serializer = GeocodeDataSerializer(data=geocode_data)
+    nearest_station = get_nearest_station(float(latitude), float(longitude), project_city_name)
+
+    if serializer.is_valid():
+        address_data = serializer.validated_data.get('address')
+        city_name = address_data.get('city') or address_data.get('town') or address_data.get('village')
+
+        is_valid_location = nearest_station and city_name == project_city_name
+
+        # Return JsonResponse with the boolean value
+        return JsonResponse({'is_registered_station': is_valid_location}, status=200)
+    else:
+        return JsonResponse(serializer.errors, status=400)

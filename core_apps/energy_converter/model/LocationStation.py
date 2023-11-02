@@ -63,7 +63,7 @@ def getAnyLocation():
     usinas.append(usina4)
 
     usina5 = LocationStation(
-        nome_usina="Horizonte",
+        nome_usina="Anápolis",
         latitude=-3.7015,
         longitude=-38.5986,
         city="Tabuleiro do Norte",
@@ -73,12 +73,12 @@ def getAnyLocation():
     usinas.append(usina5)
 
     usina6 = LocationStation(
-        nome_usina="Guanambi",
-        latitude=-14.2233,
-        longitude=-42.7799,
+        nome_usina="Murillo Usina",
+        latitude=-16.716439325265053,
+        longitude=-49.28054809570313,
         city="Goiânia",
-        average_photovoltaic_irradiation=100000,  # Apenas um valor aproximado
-        state="BA"
+        average_photovoltaic_irradiation=10000000,  # Apenas um valor aproximado
+        state="GO"
     )
     usinas.append(usina6)
     return usinas
