@@ -4,15 +4,12 @@ from allauth.account.adapter import get_adapter
 from allauth.account.utils import setup_user_email
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
-from django_countries.serializer_fields import CountryField
-from phonenumber_field.serializerfields import PhoneNumberField
 
 User = get_user_model()
 
 
 class UserSerializer(serializers.ModelSerializer):
     gender = serializers.CharField(source="profile.gender")
-    phone_number = PhoneNumberField(source="profile.phone_number")
     city = serializers.CharField(source="profile.city")
 
     class Meta:
@@ -23,7 +20,6 @@ class UserSerializer(serializers.ModelSerializer):
             "first_name",
             "last_name",
             "gender",
-            "phone_number",
             "city",
         ]
 
