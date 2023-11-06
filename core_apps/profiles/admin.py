@@ -8,8 +8,6 @@ class ProfileAdmin(admin.ModelAdmin):
         "id",
         "user",
         "gender",
-        "phone_number",
-        "city",
     ]
 
     list_display_links = ["pkid", "id", "user"]

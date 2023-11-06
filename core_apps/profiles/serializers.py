@@ -17,7 +17,6 @@ class ProfileSerializer(serializers.ModelSerializer):
             "last_name",
             "full_name",
             "email",
-            "phone_number",
             "gender",
             "city",
             "about_me",
