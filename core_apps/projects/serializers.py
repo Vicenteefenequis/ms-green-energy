@@ -75,6 +75,9 @@ class ProjectListSerializer(serializers.ModelSerializer):
     location_name = serializers.CharField(
         source='location.name', read_only=True)
 
+    location_id = serializers.CharField(
+        source='location.id', read_only=True)
+
     class Meta:
         model = Project
         fields = [
@@ -84,6 +87,7 @@ class ProjectListSerializer(serializers.ModelSerializer):
             "name",
             "description",
             "location_name",
+            'location_id'
         ]
 
 

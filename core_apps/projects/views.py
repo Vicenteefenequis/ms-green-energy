@@ -47,7 +47,8 @@ def get_nearest_station(user_latitude, user_longitude):
     nearest_station = None
     nearest_distance = float('inf')  # initialize with infinity
     for station in getAnyLocation():
-        distance = haversine(user_longitude, user_latitude, float(station.longitude), float(station.latitude))
+        distance = haversine(user_longitude, user_latitude, float(
+            station.longitude), float(station.latitude))
         if distance < nearest_distance:
             nearest_distance = distance
             nearest_station = station
@@ -57,18 +58,17 @@ def get_nearest_station(user_latitude, user_longitude):
 
 class ProjectIndicatorView(APIView):
 
-    def get_projects(self, id, user):
-        project_user = get_object_or_404(Project, id=id, user=user)
-        projects = list(Project.objects.filter(location__is_certified=True))
-        projects.insert(0, project_user)
-        return projects
+    def get_locations(self, id):
+        location_user = get_object_or_404(Location, id=id)
+        locations = list(Location.objects.filter(is_certified=True))
+        locations.insert(0, location_user)
+        return locations
 
     def get(self, request, id):
         # Recuperando os valores dos parâmetros da query
         latitude = float(request.query_params.get('latitude', 0))
         longitude = float(request.query_params.get('longitude', 0))
-        projects = self.get_projects(id, request.user)
-        locations = [project.location for project in projects if hasattr(project, 'location')]
+        locations = self.get_locations(id)
 
         if latitude and longitude:
             nearest_station = get_nearest_station(latitude, longitude)
@@ -76,7 +76,8 @@ class ProjectIndicatorView(APIView):
         else:
             average_photovoltaic_irradiation = 0  # ou outro valor padrão que deseja usar
 
-        calculator = IndicatorCalculator(locations, average_photovoltaic_irradiation)
+        calculator = IndicatorCalculator(
+            locations, average_photovoltaic_irradiation)
         indicators = Indicator.to_response(calculator)
 
         return Response(indicators, status=status.HTTP_200_OK)

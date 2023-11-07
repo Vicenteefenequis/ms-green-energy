@@ -28,7 +28,7 @@ class Location(TimeStampedModel):
     type = models.CharField(max_length=1, default="C")
     slug = models.CharField(max_length=255, blank=True, default="S/N")
     data_energetic = models.OneToOneField(
-        DataEnergetic, on_delete=models.CASCADE, related_name="locations"
+        DataEnergetic, on_delete=models.CASCADE, related_name="locations", blank=True, null=True
     )
 
     class Meta:
