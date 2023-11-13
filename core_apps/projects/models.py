@@ -36,7 +36,7 @@ class Location(TimeStampedModel):
         verbose_name_plural = _("locations")
 
     def __str__(self):
-        return self.name
+        return f'Project from {self.location.name}'
 
 
 class Project(TimeStampedModel):
@@ -55,4 +55,4 @@ class Project(TimeStampedModel):
         verbose_name_plural = _("projects")
 
     def __str__(self):
-        return self.name
+        return f'Project from {self.location.name}'

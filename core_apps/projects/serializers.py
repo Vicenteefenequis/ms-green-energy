@@ -36,6 +36,7 @@ class LocationSerializer(serializers.ModelSerializer):
             "type",
             "data_energetic",
         ]
+        ref_name = "LocationProject"
 
 
 class ProjectCreateSerializer(serializers.ModelSerializer):

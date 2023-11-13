@@ -22,15 +22,18 @@ schema_view = get_schema_view(
 )
 
 urlpatterns = [
-    path("redoc/", schema_view.with_ui("redoc", cache_timeout=0)),
+    path("docs/", schema_view.with_ui("swagger", cache_timeout=0)),
     path(settings.ADMIN_URL, admin.site.urls),
     path("api/v1/auth/user/", CustomUserDetailsView.as_view(), name="user-details"),
     path("api/v1/auth/", include("dj_rest_auth.urls")),
     path("api/v1/auth/registration/", include("dj_rest_auth.registration.urls")),
     path("api/v1/projects/", include("core_apps.projects.urls")),
-    path('api/v1/sendStationLocations/', LocationCreateView.as_view(), name='location-create'),
-    path('api/v1/locationsStations/', LocationsListStation.as_view(), name='location-list'),
-    path('api/v1/nearest_station/', NearestLocationStationView.as_view(), name='nearest-station'),
+    path('api/v1/sendStationLocations/',
+         LocationCreateView.as_view(), name='location-create'),
+    path('api/v1/locationsStations/',
+         LocationsListStation.as_view(), name='location-list'),
+    path('api/v1/nearest_station/',
+         NearestLocationStationView.as_view(), name='nearest-station'),
     path('api/v1/reverse-geocode/', reverse_geocode_view, name='reverse-geocode'),
 
 ]
