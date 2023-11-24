@@ -44,6 +44,7 @@ LOCAL_APPS = [
     "core_apps.energy_converter",
     "core_apps.users",
     "core_apps.projects",
+    "core_apps.locations",
 ]
 
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS

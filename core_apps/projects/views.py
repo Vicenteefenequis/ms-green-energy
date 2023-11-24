@@ -22,7 +22,7 @@ class ProjectIndicatorCreateView(generics.ListCreateAPIView):
     pagination_class = ProjectPagination
 
     def get_queryset(self):
-        return super().get_queryset().filter(user=self.request.user, location__is_certified=False)
+        return super().get_queryset().filter(user=self.request.user, is_certified=False)
 
     def get_serializer_class(self):
         if self.request.method == 'POST':
@@ -58,17 +58,17 @@ def get_nearest_station(user_latitude, user_longitude):
 
 class ProjectIndicatorView(APIView):
 
-    def get_locations(self, id):
-        location_user = get_object_or_404(Location, id=id)
-        locations = list(Location.objects.filter(is_certified=True))
-        locations.insert(0, location_user)
-        return locations
+    def get_projects(self, id):
+        project_user = get_object_or_404(Project, id=id)
+        projects = list(Project.objects.filter(is_certified=True))
+        projects.insert(0, project_user)
+        return projects
 
     def get(self, request, id):
         # Recuperando os valores dos parâmetros da query
         latitude = float(request.query_params.get('latitude', 0))
         longitude = float(request.query_params.get('longitude', 0))
-        locations = self.get_locations(id)
+        projects = self.get_projects(id)
 
         if latitude and longitude:
             nearest_station = get_nearest_station(latitude, longitude)
@@ -77,7 +77,7 @@ class ProjectIndicatorView(APIView):
             average_photovoltaic_irradiation = 0  # ou outro valor padrão que deseja usar
 
         calculator = IndicatorCalculator(
-            locations, average_photovoltaic_irradiation)
+            projects, average_photovoltaic_irradiation)
         indicators = Indicator.to_response(calculator)
 
         return Response(indicators, status=status.HTTP_200_OK)
@@ -86,24 +86,6 @@ class ProjectIndicatorView(APIView):
 class ProjectListView(generics.ListAPIView):
     queryset = Project.objects.all()
     serializer_class = ProjectListSerializer
-
-
-# class LocationListView(generics.ListAPIView):
-#     queryset = Location.objects.all()
-#     serializer_class = LocationSerializer
-#     pagination_class = ProjectPagination
-
-#     def get_queryset(self):
-#         return super().get_queryset().filter(type="E")
-
-
-class LocationListView(generics.ListAPIView):
-    queryset = Location.objects.all()
-    serializer_class = LocationListSerializer
-    pagination_class = ProjectPagination
-
-    def get_queryset(self):
-        return super().get_queryset().filter(type="E")
 
 
 class LocationCreateView(generics.ListCreateAPIView):
@@ -123,17 +105,21 @@ class LocationsListStation(generics.ListAPIView):
     serializer_class = LocationSerializer
 
 
-class LocationBatchView(APIView):
-    def post(self, request):
-        siglas = request.data.get('siglas', [])
+class ProjectStateComparation(APIView):
+    def get(self, request):
+        # Recuperando os valores dos parâmetros da query
+        acronym_list = request.query_params.getlist('acronym')
 
-        if not siglas:
-            return Response({"error": "Siglas não fornecidas."}, status=status.HTTP_400_BAD_REQUEST)
+        if acronym_list:
+            projects = Project.objects.filter(
+                location__acronym__in=acronym_list
+            )
+        else:
+            projects = Project.objects.all()
 
-        # Filtrar as Locations pelas siglas
-        locations = Location.objects.filter(slug__in=siglas)
-
-        calculator = IndicatorCalculator(locations)
+        calculator = IndicatorCalculator(
+            projects, 0
+        )
         indicators = Indicator.to_response(calculator)
 
         return Response(indicators, status=status.HTTP_200_OK)

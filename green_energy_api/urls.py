@@ -28,6 +28,7 @@ urlpatterns = [
     path("api/v1/auth/", include("dj_rest_auth.urls")),
     path("api/v1/auth/registration/", include("dj_rest_auth.registration.urls")),
     path("api/v1/projects/", include("core_apps.projects.urls")),
+    path("api/v1/locations/", include("core_apps.locations.urls")),
     path('api/v1/sendStationLocations/',
          LocationCreateView.as_view(), name='location-create'),
     path('api/v1/locationsStations/',

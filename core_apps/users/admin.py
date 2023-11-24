@@ -11,10 +11,10 @@ class UserAdmin(BaseUserAdmin):
     add_form = UserCreationForm
     model = User
 
-    list_display = ["pkid", "id", "email", "first_name",
+    list_display = ["id", "email", "first_name",
                     "last_name", "is_staff", "is_active"]
 
-    list_display_links = ["pkid", "id", "email"]
+    list_display_links = ["id", "email"]
 
     list_filter = ["email", "is_staff", "is_active"]
 

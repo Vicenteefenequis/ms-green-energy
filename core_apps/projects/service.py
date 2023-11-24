@@ -5,8 +5,8 @@ def calculate_indicators(locations, average_photovoltaic=0):
 
 class IndicatorCalculator:
 
-    def __init__(self, locations, average_photovoltaic=0):
-        self.locations = locations
+    def __init__(self, projects, average_photovoltaic=0):
+        self.projects = projects
         self.average_photovoltaic = average_photovoltaic
 
     def calculate_average(self, data):
@@ -14,53 +14,53 @@ class IndicatorCalculator:
 
     def residential_electricity_per_capita(self):
         return [{
-            "location_name": location.name,
-            "is_certified": location.is_certified,
-            "value": (location.data_energetic.total_residential_electricity_use + (0 if location.is_certified else self.average_photovoltaic)) / location.population
-        } for location in self.locations]
+            "location_name": project.location.name,
+            "is_certified": project.is_certified,
+            "value": (project.data_energetic.total_residential_electricity_use + (0 if project.is_certified else self.average_photovoltaic)) / project.location.population
+        } for project in self.projects]
 
     def percentage_habitants_with_regular_connection(self):
         return [{
-            "location_name": location.name,
-            "is_certified": location.is_certified,
-            "value": (location.data_energetic.number_of_people_with_regular_connection / location.population) * 100
-        } for location in self.locations]
+            "location_name": project.location.name,
+            "is_certified": project.is_certified,
+            "value": (project.data_energetic.number_of_people_with_regular_connection / project.location.population) * 100
+        } for project in self.projects]
 
     def electricity_consumption_in_public_buildings(self):
         return [{
-            "location_name": location.name,
-            "is_certified": location.is_certified,
-            "value": (location.data_energetic.total_electricity_consumption_in_public_buildings + (0 if location.is_certified else self.average_photovoltaic)) / location.data_energetic.total_area_of_these_buildings
-        } for location in self.locations]
+            "location_name": project.location.name,
+            "is_certified": project.is_certified,
+            "value": (project.data_energetic.total_electricity_consumption_in_public_buildings + (0 if project.is_certified else self.average_photovoltaic)) / project.data_energetic.total_area_of_these_buildings
+        } for project in self.projects]
 
     def percentage_of_renewable_energy(self):
         return [{
-            "location_name": location.name,
-            "is_certified": location.is_certified,
+            "location_name": project.location.name,
+            "is_certified": project.is_certified,
             "value": (
-                             (location.data_energetic.total_electricity_consumption_produced_from_renewable + (0 if location.is_certified else self.average_photovoltaic)) / location.data_energetic.total_energy_consumption) * 100
-        } for location in self.locations]
+                (project.data_energetic.total_electricity_consumption_produced_from_renewable + (0 if project.is_certified else self.average_photovoltaic)) / project.data_energetic.total_energy_consumption) * 100
+        } for project in self.projects]
 
     def total_electricity_per_capita(self):
         return [{
-            "location_name": location.name,
-            "is_certified": location.is_certified,
-            "value": (location.data_energetic.total_electricity_use +(0 if location.is_certified else self.average_photovoltaic)) / location.population
-        } for location in self.locations]
+            "location_name": project.location.name,
+            "is_certified": project.is_certified,
+            "value": (project.data_energetic.total_electricity_use + (0 if project.is_certified else self.average_photovoltaic)) / project.location.population
+        } for project in self.projects]
 
     def average_interruptions_energy_consumer(self):
         return [{
-            "location_name": location.name,
-            "is_certified": location.is_certified,
-            "value": location.data_energetic.total_number_of_interruptions / location.data_energetic.total_number_of_consumers_served
-        } for location in self.locations]
+            "location_name": project.location.name,
+            "is_certified": project.is_certified,
+            "value": project.data_energetic.total_number_of_interruptions / project.data_energetic.total_number_of_consumers_served
+        } for project in self.projects]
 
     def duration_average_interruptions_energy(self):
         return [{
-            "location_name": location.name,
-            "is_certified": location.is_certified,
-            "value": location.data_energetic.sum_of_the_duration_of_all_interruptions / location.data_energetic.total_number_of_interruptions
-        } for location in self.locations]
+            "location_name": project.location.name,
+            "is_certified": project.is_certified,
+            "value": project.data_energetic.sum_of_the_duration_of_all_interruptions / project.data_energetic.total_number_of_interruptions
+        } for project in self.projects]
 
 
 class Indicator:
