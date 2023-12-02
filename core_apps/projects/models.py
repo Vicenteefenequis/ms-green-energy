@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth import get_user_model
 from core_apps.common.models import TimeStampedModel
 from django.utils.translation import gettext_lazy as _
+from core_apps.locations.models import Location
 
 User = get_user_model()
 
@@ -20,25 +21,6 @@ class DataEnergetic(TimeStampedModel):
     total_number_of_interruptions = models.FloatField()
 
 
-class Location(TimeStampedModel):
-    name = models.CharField(max_length=50, blank=False,
-                            null=False, unique=True)
-    population = models.IntegerField()
-    is_certified = models.BooleanField(default=False)
-    type = models.CharField(max_length=1, blank=False, null=False)
-    slug = models.CharField(max_length=255, blank=True, default="S/N")
-    data_energetic = models.OneToOneField(
-        DataEnergetic, on_delete=models.CASCADE, related_name="locations"
-    )
-
-    class Meta:
-        verbose_name = _("location")
-        verbose_name_plural = _("locations")
-
-    def __str__(self):
-        return self.name
-
-
 class Project(TimeStampedModel):
     user = models.ForeignKey(
         User, on_delete=models.CASCADE, related_name="projects"
@@ -49,10 +31,14 @@ class Project(TimeStampedModel):
     )
     name = models.CharField(max_length=50, blank=False, null=False)
     description = models.TextField()
+    data_energetic = models.OneToOneField(
+        DataEnergetic, on_delete=models.CASCADE, related_name="locations", blank=True, null=True
+    )
+    is_certified = models.BooleanField(default=False)
 
     class Meta:
         verbose_name = _("project")
         verbose_name_plural = _("projects")
 
     def __str__(self):
-        return self.name
+        return f'Project from {self.location.name}'

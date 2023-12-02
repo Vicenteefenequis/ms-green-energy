@@ -1,3 +1,17 @@
 from django.contrib import admin
 
-# Register your models here.
+from .models import DataEnergetic, Project
+
+
+class ProjectsAdmin(admin.ModelAdmin):
+    pass
+
+
+admin.site.register(Project, ProjectsAdmin)
+
+
+class DataEnergeticAdmin(admin.ModelAdmin):
+    pass
+
+
+admin.site.register(DataEnergetic, DataEnergeticAdmin)

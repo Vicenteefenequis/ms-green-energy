@@ -35,13 +35,16 @@ THIRD_PARTY_APPS = [
     "allauth.socialaccount",
     "dj_rest_auth",
     "dj_rest_auth.registration",
+    "rest_framework_swagger",
 ]
 
 LOCAL_APPS = [
     "core_apps.profiles",
     "core_apps.common",
+    "core_apps.energy_converter",
     "core_apps.users",
     "core_apps.projects",
+    "core_apps.locations",
 ]
 
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS

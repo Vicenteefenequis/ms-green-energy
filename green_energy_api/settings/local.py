@@ -14,8 +14,9 @@ CSRF_TRUSTED_ORIGINS = ["http://localhost:8080"]
 
 CORS_ALLOW_CREDENTIALS = True
 
-CORS_ALLOWED_ORIGINS = ["http://localhost:5173"]
-
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:5173",
+]
 DEFAULT_FROM_EMAIL = "vicente19981@live.com"
 DOMAIN = env("DOMAIN")
 SITE_NAME = "Green Energy"
