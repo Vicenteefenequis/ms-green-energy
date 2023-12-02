@@ -68,7 +68,9 @@ class ProjectListSerializer(serializers.ModelSerializer):
             "name",
             "description",
             "location_name",
-            "is_certified"
+            "is_certified",
+            "created_at",
+            "updated_at"
         ]
 
 
